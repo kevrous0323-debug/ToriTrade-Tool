@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculatrice Position — ToriTrade</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #0d1117;
+      color: #e6edf3;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      padding: 20px;
+      min-height: 100vh;
+    }
+
+    .container { max-width: 760px; margin: 0 auto; }
+
+    .header { padding: 10px 0 20px; }
+    .header h1 { font-size: 1.4rem; font-weight: 700; color: #f0f6fc; }
+    .header p { font-size: 0.85rem; color: #8b949e; margin-top: 4px; }
+
+    .card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+
+    .card h2 {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #8b949e;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-bottom: 14px;
+    }
+
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+
+    label {
+      display: block;
+      font-size: 0.75rem;
+      color: #8b949e;
+      margin-bottom: 5px;
+      font-weight: 600;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      color: #e6edf3;
+      padding: 10px 12px;
+      font-size: 1rem;
+      font-family: 'SF Mono', Consolas, monospace;
+    }
+    input[type="number"]:focus { outline: none; border-color: #58a6ff; }
+
+    /* Toggle boutons */
+    .toggle-group { display: flex; gap: 8px; }
+    .toggle-btn {
+      flex: 1;
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      color: #8b949e;
+      padding: 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-align: center;
+    }
+    .toggle-btn:hover { border-color: #484f58; }
+    .toggle-btn.active-long  { background: #1a4228; border-color: #3fb950; color: #3fb950; }
+    .toggle-btn.active-short { background: #3d1a1a; border-color: #f85149; color: #f85149; }
+    .toggle-btn.active-risk  { background: #1d2d3e; border-color: #58a6ff; color: #58a6ff; }
+
+    .field-group { margin-bottom: 12px; }
+
+    /* Résultats */
+    .result-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 9px 0;
+      border-bottom: 1px solid #21262d;
+      font-size: 0.9rem;
+    }
+    .result-row:last-child { border-bottom: none; }
+    .result-label { color: #8b949e; }
+    .result-value {
+      font-family: 'SF Mono', Consolas, monospace;
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: #f0f6fc;
+    }
+    .result-value.big { font-size: 1.5rem; color: #58a6ff; }
+    .result-value.green { color: #3fb950; }
+    .result-value.red { color: #f85149; }
+    .result-value.orange { color: #ffa657; }
+    .result-sub { font-size: 0.72rem; color: #6e7681; margin-left: 8px; font-family: -apple-system, sans-serif; font-weight: 400; }
+
+    /* Badge verdict */
+    .verdict {
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-top: 14px;
+      font-size: 0.88rem;
+      line-height: 1.5;
+    }
+    .verdict-low  { background: #12261e; border: 1px solid #238636; }
+    .verdict-mid  { background: #2d2b1e; border: 1px solid #9e6a03; }
+    .verdict-high { background: #2d1a1a; border: 1px solid #da3633; }
+    .verdict b { display: block; margin-bottom: 4px; font-size: 0.95rem; }
+
+    /* Formule pédagogique */
+    .formula {
+      background: #0d1117;
+      border: 1px dashed #30363d;
+      border-radius: 8px;
+      padding: 12px 14px;
+      margin-top: 14px;
+      font-family: 'SF Mono', Consolas, monospace;
+      font-size: 0.78rem;
+      color: #8b949e;
+      line-height: 1.9;
+      white-space: pre-wrap;
+    }
+    .formula .hl { color: #58a6ff; font-weight: 700; }
+
+    .empty-state {
+      text-align: center;
+      color: #6e7681;
+      font-size: 0.85rem;
+      padding: 24px 0;
+    }
+
+    @media (max-width: 560px) {
+      .grid2, .grid3 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <h1>🧮 Calculatrice Position — ToriTrade</h1>
+    <p>Capital × Risque% ÷ SL% = Position. Le size n'est jamais arbitraire.</p>
+  </div>
+
+  <!-- INPUTS -->
+  <div class="card">
+    <h2>Paramètres du compte</h2>
+    <div class="grid2">
+      <div class="field-group">
+        <label>Capital total ($) <span style="color:#3fb950">● mémorisé</span></label>
+        <input type="number" id="capital" value="10000" step="any" oninput="saveCapital(); calc()">
+      </div>
+      <div class="field-group">
+        <label>Risque par trade</label>
+        <div class="toggle-group">
+          <button class="toggle-btn" id="risk1" onclick="setRisk(1)">1% (FTMO)</button>
+          <button class="toggle-btn active-risk" id="risk2" onclick="setRisk(2)">2% (Tori)</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Le trade</h2>
+    <div class="field-group">
+      <label>Direction</label>
+      <div class="toggle-group">
+        <button class="toggle-btn active-long" id="btnLong" onclick="setDir('long')">📈 LONG</button>
+        <button class="toggle-btn" id="btnShort" onclick="setDir('short')">📉 SHORT</button>
+      </div>
+    </div>
+    <div class="grid3">
+      <div class="field-group">
+        <label>Prix d'entrée</label>
+        <input type="number" id="entree" placeholder="ex: 59.93" step="any" oninput="calc()">
+      </div>
+      <div class="field-group">
+        <label>Stop Loss (Safety Line)</label>
+        <input type="number" id="sl" placeholder="ex: 55.78" step="any" oninput="calc()">
+      </div>
+      <div class="field-group">
+        <label>Take Profit (optionnel)</label>
+        <input type="number" id="tp" placeholder="ex: 67.44" step="any" oninput="calc()">
+      </div>
+    </div>
+  </div>
+
+  <!-- RÉSULTATS -->
+  <div class="card">
+    <h2>Résultats</h2>
+    <div id="results"><div class="empty-state">Entre ton prix d'entrée et ton stop loss 👆</div></div>
+  </div>
+
+</div>
+
+<script>
+  let direction = 'long';
+  let riskPct = 2;
+
+  // Mémorisation capital + risque (localStorage)
+  function saveCapital() {
+    const v = document.getElementById('capital').value;
+    if (v) localStorage.setItem('toritrade_calc_capital', v);
+  }
+  function loadSaved() {
+    const cap = localStorage.getItem('toritrade_calc_capital');
+    if (cap) document.getElementById('capital').value = cap;
+    const r = localStorage.getItem('toritrade_calc_risk');
+    if (r) setRisk(parseInt(r));
+  }
+
+  function setDir(d) {
+    direction = d;
+    document.getElementById('btnLong').className = 'toggle-btn' + (d === 'long' ? ' active-long' : '');
+    document.getElementById('btnShort').className = 'toggle-btn' + (d === 'short' ? ' active-short' : '');
+    calc();
+  }
+
+  function setRisk(r) {
+    riskPct = r;
+    localStorage.setItem('toritrade_calc_risk', r);
+    document.getElementById('risk1').className = 'toggle-btn' + (r === 1 ? ' active-risk' : '');
+    document.getElementById('risk2').className = 'toggle-btn' + (r === 2 ? ' active-risk' : '');
+    calc();
+  }
+
+  function fmt(n, dec) {
+    if (dec === undefined) dec = n >= 1000 ? 0 : (n >= 10 ? 2 : 4);
+    return n.toLocaleString('fr-CA', { minimumFractionDigits: dec, maximumFractionDigits: dec });
+  }
+
+  function calc() {
+    const capital = parseFloat(document.getElementById('capital').value) || 0;
+    const entree  = parseFloat(document.getElementById('entree').value) || 0;
+    const sl      = parseFloat(document.getElementById('sl').value) || 0;
+    const tp      = parseFloat(document.getElementById('tp').value) || 0;
+    const out     = document.getElementById('results');
+
+    if (!capital || !entree || !sl) {
+      out.innerHTML = '<div class="empty-state">Entre ton prix d\'entrée et ton stop loss 👆</div>';
+      return;
+    }
+
+    // Validation direction vs SL
+    const slWrongSide = (direction === 'long' && sl >= entree) || (direction === 'short' && sl <= entree);
+    if (slWrongSide) {
+      out.innerHTML = '<div class="verdict verdict-high"><b>⚠️ Stop Loss du mauvais côté</b>' +
+        (direction === 'long'
+          ? 'Pour un LONG, le SL doit être EN DESSOUS de l\'entrée.'
+          : 'Pour un SHORT, le SL doit être AU-DESSUS de l\'entrée.') + '</div>';
+      return;
+    }
+
+    const riskDollars = capital * riskPct / 100;
+    const slDist  = Math.abs(entree - sl);
+    const slPct   = slDist / entree * 100;
+    const position = riskDollars / (slPct / 100);
+    const units   = position / entree;
+    const posCapped = Math.min(position, capital);
+    const overCapital = position > capital;
+
+    // TP minimum 2:1
+    const tpMin = direction === 'long' ? entree + slDist * 2 : entree - slDist * 2;
+
+    // R:R si TP fourni
+    let rrHtml = '';
+    if (tp) {
+      const tpWrongSide = (direction === 'long' && tp <= entree) || (direction === 'short' && tp >= entree);
+      if (!tpWrongSide) {
+        const gain = Math.abs(tp - entree);
+        const rr = gain / slDist;
+        const rrClass = rr >= 2 ? 'green' : 'red';
+        const rrNote = rr >= 2 ? '✅ ≥ 2:1' : '❌ sous le minimum 2:1';
+        rrHtml = '<div class="result-row"><span class="result-label">R:R vers ce TP</span>' +
+          '<span class="result-value ' + rrClass + '">' + fmt(rr, 2) + ':1<span class="result-sub">' + rrNote + '</span></span></div>' +
+          '<div class="result-row"><span class="result-label">Gain si TP touché</span>' +
+          '<span class="result-value green">+$' + fmt(position * gain / entree, 0) + '<span class="result-sub">' + fmt(gain / entree * 100, 2) + '% du prix</span></span></div>';
+      } else {
+        rrHtml = '<div class="result-row"><span class="result-label">R:R vers ce TP</span>' +
+          '<span class="result-value red">TP du mauvais côté ⚠️</span></div>';
+      }
+    }
+
+    // Verdict Low/High Risk (règle Kevin §3)
+    let verdict;
+    if (slPct <= 6) {
+      verdict = '<div class="verdict verdict-low"><b>✅ LOW RISK — SL ' + fmt(slPct, 2) + '%</b>' +
+        'Setup propre, près de l\'intersection. Gestion Tori pure : Safety Line classique, laisser respirer les pullbacks. BE rapide ici = tuer ses winners.</div>';
+    } else if (slPct <= 10) {
+      verdict = '<div class="verdict verdict-mid"><b>⚠️ RISQUE MOYEN — SL ' + fmt(slPct, 2) + '%</b>' +
+        'Zone intermédiaire. Vérifier la distance à l\'intersection et la route libre. Trailing standard de la Safety Line.</div>';
+    } else {
+      verdict = '<div class="verdict verdict-high"><b>🔴 HIGH RISK — SL ' + fmt(slPct, 2) + '%</b>' +
+        'Loin de l\'intersection. Position réduite. Règle conditionnelle : BE agressif dès le premier ' +
+        (direction === 'long' ? 'higher low' : 'lower high') + ' confirmé = option gratuite sur le grand move. Ou passer le trade.</div>';
+    }
+
+    const overWarn = overCapital
+      ? '<div class="verdict verdict-mid"><b>💡 Position théorique > capital</b>La formule donne $' + fmt(position, 0) +
+        ' mais ton capital est $' + fmt(capital, 0) + '. En spot sans levier, tu investis au maximum $' + fmt(capital, 0) +
+        ' → perte si SL touché = $' + fmt(capital * slPct / 100, 0) +
+        ', sous ton plafond de $' + fmt(riskDollars, 0) + ' ✅. Le SL est si serré que même all-in tu ne peux pas risquer ' + riskPct + '%.</div>'
+      : '';
+
+    out.innerHTML =
+      '<div class="result-row"><span class="result-label">Risque max autorisé</span>' +
+      '<span class="result-value">$' + fmt(riskDollars, 0) + '<span class="result-sub">' + riskPct + '% de $' + fmt(capital, 0) + '</span></span></div>' +
+
+      '<div class="result-row"><span class="result-label">Distance au SL</span>' +
+      '<span class="result-value">$' + fmt(slDist) + '<span class="result-sub">SL% = ' + fmt(slPct, 2) + '%</span></span></div>' +
+
+      '<div class="result-row"><span class="result-label">📐 POSITION À PRENDRE</span>' +
+      '<span class="result-value big">$' + fmt(position, 0) + '</span></div>' +
+
+      '<div class="result-row"><span class="result-label">En unités</span>' +
+      '<span class="result-value">' + fmt(units, units < 1 ? 6 : 4) + '<span class="result-sub">unités de l\'actif</span></span></div>' +
+
+      '<div class="result-row"><span class="result-label">Perte si SL touché (vérif)</span>' +
+      '<span class="result-value red">−$' + fmt(position * slPct / 100, 0) + '<span class="result-sub">= ' + riskPct + '% du capital ✅</span></span></div>' +
+
+      '<div class="result-row"><span class="result-label">TP minimum (2:1)</span>' +
+      '<span class="result-value orange">$' + fmt(tpMin) + '<span class="result-sub">le premier S/R valide doit être ' + (direction === 'long' ? 'au-dessus' : 'en dessous') + '</span></span></div>' +
+
+      rrHtml + verdict + overWarn +
+
+      '<div class="formula">Étape 1 — Risque $   : $' + fmt(capital, 0) + ' × ' + riskPct + '% = <span class="hl">$' + fmt(riskDollars, 0) + '</span>\n' +
+      'Étape 2 — SL%        : $' + fmt(slDist) + ' ÷ $' + fmt(entree) + ' = <span class="hl">' + fmt(slPct, 2) + '%</span>\n' +
+      'Étape 3 — Position   : $' + fmt(riskDollars, 0) + ' ÷ ' + fmt(slPct / 100, 4) + ' = <span class="hl">$' + fmt(position, 0) + '</span>\n' +
+      'Étape 4 — Vérif      : $' + fmt(position, 0) + ' × ' + fmt(slPct / 100, 4) + ' = <span class="hl">$' + fmt(position * slPct / 100, 0) + '</span> ✅</div>';
+  }
+
+  loadSaved();
+  calc();
+</script>
+</body>
+</html>

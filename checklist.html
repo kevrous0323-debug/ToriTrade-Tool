@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checklist ToriTrade — Avant chaque trade</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #0d1117;
+      color: #e6edf3;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 680px;
+      margin: 0 auto;
+    }
+
+    /* HEADER */
+    .header {
+      text-align: center;
+      padding: 30px 0 20px;
+    }
+
+    .header h1 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #f0f6fc;
+      letter-spacing: -0.5px;
+    }
+
+    .header p {
+      color: #8b949e;
+      font-size: 0.9rem;
+      margin-top: 6px;
+    }
+
+    /* PROGRESS GLOBAL */
+    .progress-global {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .progress-bar-wrap {
+      flex: 1;
+      background: #21262d;
+      border-radius: 6px;
+      height: 8px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #238636, #2ea043);
+      border-radius: 6px;
+      transition: width 0.3s ease;
+      width: 0%;
+    }
+
+    .progress-text {
+      font-size: 0.85rem;
+      color: #8b949e;
+      white-space: nowrap;
+      min-width: 60px;
+      text-align: right;
+    }
+
+    /* SECTION */
+    .section {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      margin-bottom: 14px;
+      overflow: hidden;
+      transition: border-color 0.3s;
+    }
+
+    .section.complete {
+      border-color: #238636;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
+      cursor: pointer;
+      user-select: none;
+      background: #161b22;
+    }
+
+    .section-header:hover {
+      background: #1c2128;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .section-icon {
+      font-size: 1.1rem;
+    }
+
+    .section-badge {
+      font-size: 0.75rem;
+      background: #21262d;
+      color: #8b949e;
+      padding: 2px 8px;
+      border-radius: 12px;
+      transition: all 0.3s;
+    }
+
+    .section.complete .section-badge {
+      background: #1a4228;
+      color: #3fb950;
+    }
+
+    .section-chevron {
+      color: #8b949e;
+      font-size: 0.8rem;
+      transition: transform 0.2s;
+    }
+
+    .section.open .section-chevron {
+      transform: rotate(180deg);
+    }
+
+    .section-body {
+      display: none;
+      padding: 4px 18px 14px;
+      border-top: 1px solid #21262d;
+    }
+
+    .section.open .section-body {
+      display: block;
+    }
+
+    /* ITEM */
+    .item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 9px 4px;
+      border-bottom: 1px solid #21262d;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: background 0.15s;
+    }
+
+    .item:last-child {
+      border-bottom: none;
+    }
+
+    .item:hover {
+      background: #1c2128;
+    }
+
+    .item.checked {
+      opacity: 0.6;
+    }
+
+    .checkbox {
+      width: 18px;
+      height: 18px;
+      border: 2px solid #484f58;
+      border-radius: 4px;
+      flex-shrink: 0;
+      margin-top: 1px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      background: transparent;
+    }
+
+    .item.checked .checkbox {
+      background: #238636;
+      border-color: #238636;
+    }
+
+    .checkbox-tick {
+      display: none;
+      color: white;
+      font-size: 11px;
+      font-weight: bold;
+    }
+
+    .item.checked .checkbox-tick {
+      display: block;
+    }
+
+    .item-text {
+      font-size: 0.88rem;
+      line-height: 1.45;
+      color: #c9d1d9;
+    }
+
+    .item.checked .item-text {
+      text-decoration: line-through;
+      color: #6e7681;
+    }
+
+    .item-tag {
+      font-size: 0.7rem;
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-weight: 600;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .tag-w { background: #1d2d3e; color: #58a6ff; }
+    .tag-d { background: #2d2b1e; color: #d29922; }
+    .tag-4h { background: #1e2d1e; color: #3fb950; }
+    .tag-1h { background: #2d1e2d; color: #bc8cff; }
+    .tag-15m { background: #2d1e1e; color: #f78166; }
+    .tag-ftmo { background: #2d1e2e; color: #ff7b72; }
+
+    /* CANCEL SECTION */
+    .cancel-section {
+      background: #1a0f0f;
+      border: 1px solid #6e1a1a;
+      border-radius: 12px;
+      padding: 16px 18px;
+      margin-bottom: 14px;
+    }
+
+    .cancel-title {
+      color: #ff7b72;
+      font-weight: 700;
+      font-size: 0.95rem;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .cancel-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 5px 0;
+      font-size: 0.85rem;
+      color: #ffa198;
+    }
+
+    .cancel-dot {
+      width: 6px;
+      height: 6px;
+      background: #ff7b72;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* VERDICT */
+    .verdict {
+      display: none;
+      background: #0f2d1a;
+      border: 2px solid #238636;
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      margin-bottom: 14px;
+    }
+
+    .verdict.show {
+      display: block;
+    }
+
+    .verdict-icon {
+      font-size: 2.5rem;
+      margin-bottom: 8px;
+    }
+
+    .verdict-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #3fb950;
+      margin-bottom: 4px;
+    }
+
+    .verdict-sub {
+      font-size: 0.85rem;
+      color: #8b949e;
+    }
+
+    /* BUTTONS */
+    .actions {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 30px;
+    }
+
+    .btn-reset {
+      flex: 1;
+      padding: 12px;
+      background: #21262d;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      color: #c9d1d9;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-reset:hover {
+      background: #30363d;
+      color: #f0f6fc;
+    }
+
+    .btn-expand {
+      flex: 1;
+      padding: 12px;
+      background: #1a2d1a;
+      border: 1px solid #238636;
+      border-radius: 8px;
+      color: #3fb950;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-expand:hover {
+      background: #1f3d1f;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <h1>📈 Checklist ToriTrade</h1>
+    <p>Complète chaque section avant d'entrer dans un trade</p>
+  </div>
+
+  <!-- PROGRESS GLOBAL -->
+  <div class="progress-global">
+    <span style="font-size:0.85rem; color:#8b949e; white-space:nowrap;">Progression</span>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="globalBar"></div>
+    </div>
+    <span class="progress-text" id="globalText">0 / 28</span>
+  </div>
+
+  <!-- SECTION 1 — TOP DOWN -->
+  <div class="section open" id="s1">
+    <div class="section-header" onclick="toggleSection('s1')">
+      <div class="section-title">
+        <span class="section-icon">🌍</span>
+        <span>Étape 1 — Analyse Top-Down</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span class="section-badge" id="badge-s1">0/2</span>
+        <span class="section-chevron">▼</span>
+      </div>
+    </div>
+    <div class="section-body">
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><span class="checkbox-tick">✓</span></div>
+        <span class="item-text">Tendance macro claire identifiée (uptrend / downtrend / range)</span>
+        <span class="item-tag tag-w">W</span>
+      </div>
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><span class="checkbox-tick">✓</span></div>
+        <span class="item-text">Biais directionnel confirmé — HH/HL (haussier) ou LH/LL (baissier)</span>
+        <span class="item-tag tag-d">D</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 2 — TRENDLINE -->
+  <div class="section" id="s2">
+    <div class="section-header" onclick="toggleSection('s2')">
+      <div class="section-title">
+        <span class="section-icon">📐</span>
+        <span>Étape 2 — Qualifier la Trendline</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span class="section-badge" id="badge-s2">0/9</span>
+        <span class="section-chevron">▼</span>
+      </div>
+    </div>
+    <div class="section-body">
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><span class="checkbox-tick">✓</span></div>
+        <span class="item-text">Tracée avec le RAY tool (pas trendline) — s'étend à l'infini</span>
+        <span class="item-tag tag-4h">4H</span>
+      </div>
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><span class="checkbox-tick">✓</span></div>
+        <span class="item-text">Prix n'a JAMAIS traversé la ligne entre Point A et Point B</span>
+        <span class="item-tag tag-4h">4H</span>
+      </div>
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><span class="checkbox-tick">✓</span></div>
+        <span class="item-text">3+ taps (wicks) sur la trendline</span>
+        <span class="item-tag tag-4h">4H</span>
+      </div>
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><span class="checkbox-tick">✓</span></div>
+        <span class="item-text">6+ bougies de spacing entre chaque tap</span>
+        <span class="item-tag tag-4h">4H</span>
+      </div>
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><span class="checkbox-tick">✓</span></div>
+        <span class="item-text">Pente inférieure à 45° (vérifié en zoomant sur 3 mois de 4H)</span>
+        <span class="item-tag tag-4h">4H</span>
+      </div>
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><span class="checkbox-tick">✓</span></div>
+        <span class="item-text">Dessinée pour capturer le maximum de wicks possible</span>
+        <span class="item-tag tag-4h">4H</span>
+      </div>
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><span class="checkbox-tick">✓</span></div>
+        <span class="item-text">3+ semaines entre le premier et le dernier tap</span>
+        <span class="item-tag tag-4h">4H</span>
+      </div>
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><span class="checkbox-tick">✓</span></div>
+        <span class="item-text">Les DEUX trendlines dessinées (Upward + Downward) — aucune des deux n'a de nom avant le break</span>
+        <span class="item-tag tag-4h">4H</span>
+      </div>
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><span class="checkbox-tick">✓</span></div>
+        <span class="item-text">Type de setup identifié — 2 Touch Break / 3 Touch Break ⭐ / Break &amp; Retest / Bounce ⚠️</span>
+        <span class="item-tag tag-4h">4H</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 3 — VALIDER -->
+  <div class="section" id="s3">
+    <div class="section-header" onclick="toggleSection('s3')">
+      <div class="section-title">
+        <span class="section-icon">🎯</span>
+        <span>Étape 3 — Valider le Trade</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span class="section-badge" id="badge-s3">0/9</span>
+        <span class="section-chevron">▼</span>
+      </div>
+    </div>
+    <div class="section-body">
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><span class="checkbox-tick">✓</span></div>
+        <span class="item-text">Action Line identifiée (ligne brisée) + Safety Line identifiée (ligne opposante déjà tracée)</span>
+        <span class="item-tag tag-4h">4H</span>
+      </div>
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><span class="checkbox-tick">✓</span></div>
+        <span class="item-text">Setup LOW RISK évalué — break près de l'intersection (éviter High Risk au début du challenge)</span>
+        <span class="item-tag tag-4h">4H</span>
+      </div>
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><span class="checkbox-tick">✓</span></div>
+        <span class="item-text">SL calculé — verticale à la bougie 4 → intersection avec la Safety Line</span>
+        <span class="item-tag tag-4h">4H</span>
+      </div>
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><span class="checkbox-tick">✓</span></div>
+        <span class="item-text">TP identifié — S/R horizontal le plus proche au-dessus du plancher 2:1</span>
+        <span class="item-tag tag-4h">4H</span>
+      </div>
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><span class="checkbox-tick">✓</span></div>
+        <span class="item-text">S/R qualifié — 3+ rejets passés, visible en Daily/Weekly, confirmé par HVN sur VRVP</span>
+        <span class="item-tag tag-d">D</span>
+      </div>
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><span class="checkbox-tick">✓</span></div>
+        <span class="item-text">Route libre vers le TP — aucun S/R mur qualifié entre l'entrée et le TP (vérifier W + D)</span>
+        <span class="item-tag tag-4h">4H</span>
+      </div>
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><span class="checkbox-tick">✓</span></div>
+        <span class="item-text">R:R calculé et ≥ 2:1</span>
+        <span class="item-tag tag-4h">4H</span>
+      </div>
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><span class="checkbox-tick">✓</span></div>
+        <span class="item-text">Position size calculé = (Capital × 2%) ÷ SL% — pas au feeling</span>
+        <span class="item-tag tag-4h">4H</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 4 — CONFIRMATION -->
+  <div class="section" id="s4">
+    <div class="section-header" onclick="toggleSection('s4')">
+      <div class="section-title">
+        <span class="section-icon">🔍</span>
+        <span>Étape 4 — Confirmation d'Entrée</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span class="section-badge" id="badge-s4">0/4</span>
+        <span class="section-chevron">▼</span>
+      </div>
+    </div>
+    <div class="section-body">
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><span class="checkbox-tick">✓</span></div>
+        <span class="item-text">Prix approche la trendline</span>
+        <span class="item-tag tag-1h">1H</span>
+      </div>
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><span class="checkbox-tick">✓</span></div>
+        <span class="item-text">Signe de rejet ou sweep en cours</span>
+        <span class="item-tag tag-1h">1H</span>
+      </div>
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><span class="checkbox-tick">✓</span></div>
+        <span class="item-text">Bougie de confirmation clôturée</span>
+        <span class="item-tag tag-15m">15M</span>
+      </div>
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><span class="checkbox-tick">✓</span></div>
+        <span class="item-text">Sweep terminé si applicable</span>
+        <span class="item-tag tag-15m">15M</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 5 — FTMO -->
+  <div class="section" id="s5">
+    <div class="section-header" onclick="toggleSection('s5')">
+      <div class="section-title">
+        <span class="section-icon">🏦</span>
+        <span>Étape 5 — Règles FTMO</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span class="section-badge" id="badge-s5">0/4</span>
+        <span class="section-chevron">▼</span>
+      </div>
+    </div>
+    <div class="section-body">
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><span class="checkbox-tick">✓</span></div>
+        <span class="item-text">Aucune news majeure dans les 15min — NFP / CPI / FOMC</span>
+        <span class="item-tag tag-ftmo">FTMO</span>
+      </div>
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><span class="checkbox-tick">✓</span></div>
+        <span class="item-text">Drawdown journalier actuel inférieur à 3%</span>
+        <span class="item-tag tag-ftmo">FTMO</span>
+      </div>
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><span class="checkbox-tick">✓</span></div>
+        <span class="item-text">Pas 2 jours rouges consécutifs — sinon pause 48h</span>
+        <span class="item-tag tag-ftmo">FTMO</span>
+      </div>
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><span class="checkbox-tick">✓</span></div>
+        <span class="item-text">Première tentative sur cette trendline (une seule chance)</span>
+        <span class="item-tag tag-ftmo">FTMO</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TRADE ANNULÉ -->
+  <div class="cancel-section">
+    <div class="cancel-title">🚫 Trade annulé si...</div>
+    <div class="cancel-item"><div class="cancel-dot"></div>R:R inférieur à 2:1</div>
+    <div class="cancel-item"><div class="cancel-dot"></div>Daily sans direction claire</div>
+    <div class="cancel-item"><div class="cancel-dot"></div>Safety Line impossible à tracer</div>
+    <div class="cancel-item"><div class="cancel-dot"></div>Trendline déjà tentée une fois</div>
+    <div class="cancel-item"><div class="cancel-dot"></div>Weekly en résistance majeure contre le trade</div>
+    <div class="cancel-item"><div class="cancel-dot"></div>Moins de 3 taps ou moins de 6 bougies entre les taps</div>
+  </div>
+
+  <!-- VERDICT -->
+  <div class="verdict" id="verdict">
+    <div class="verdict-icon">✅</div>
+    <div class="verdict-title">Checklist complète — Trade validé</div>
+    <div class="verdict-sub">Toutes les conditions sont remplies. Tu peux entrer.</div>
+  </div>
+
+  <!-- ACTIONS -->
+  <div class="actions">
+    <button class="btn-reset" onclick="resetAll()">🔄 Nouveau trade</button>
+    <button class="btn-expand" onclick="expandAll()">📂 Tout ouvrir</button>
+  </div>
+
+</div>
+
+<script>
+  const TOTAL = 28;
+  let checked = 0;
+
+  function toggle(el) {
+    if (el.classList.contains('checked')) {
+      el.classList.remove('checked');
+      checked--;
+    } else {
+      el.classList.add('checked');
+      checked++;
+    }
+    updateProgress();
+    updateSectionBadge(el.closest('.section'));
+  }
+
+  function updateProgress() {
+    const pct = (checked / TOTAL) * 100;
+    document.getElementById('globalBar').style.width = pct + '%';
+    document.getElementById('globalText').textContent = checked + ' / ' + TOTAL;
+
+    const verdict = document.getElementById('verdict');
+    if (checked === TOTAL) {
+      verdict.classList.add('show');
+    } else {
+      verdict.classList.remove('show');
+    }
+  }
+
+  function updateSectionBadge(section) {
+    if (!section) return;
+    const id = section.id;
+    const items = section.querySelectorAll('.item');
+    const done = section.querySelectorAll('.item.checked').length;
+    const total = items.length;
+    document.getElementById('badge-' + id).textContent = done + '/' + total;
+
+    if (done === total) {
+      section.classList.add('complete');
+    } else {
+      section.classList.remove('complete');
+    }
+  }
+
+  function toggleSection(id) {
+    const s = document.getElementById(id);
+    s.classList.toggle('open');
+  }
+
+  function expandAll() {
+    ['s1','s2','s3','s4','s5'].forEach(id => {
+      document.getElementById(id).classList.add('open');
+    });
+  }
+
+  function resetAll() {
+    document.querySelectorAll('.item.checked').forEach(el => el.classList.remove('checked'));
+    checked = 0;
+    updateProgress();
+    ['s1','s2','s3','s4','s5'].forEach(id => {
+      const s = document.getElementById(id);
+      s.classList.remove('complete');
+      const items = s.querySelectorAll('.item');
+      document.getElementById('badge-' + id).textContent = '0/' + items.length;
+    });
+    document.getElementById('verdict').classList.remove('show');
+    // Ouvre la première section
+    document.getElementById('s1').classList.add('open');
+    ['s2','s3','s4','s5'].forEach(id => document.getElementById(id).classList.remove('open'));
+  }
+</script>
+</body>
+</html>
