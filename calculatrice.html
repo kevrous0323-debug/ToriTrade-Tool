@@ -170,6 +170,10 @@
         </div>
       </div>
     </div>
+    <div class="field-group" style="margin-top:12px">
+      <label>Taille de contrat MT5 (1 lot = X unités) <span style="color:#3fb950">● mémorisé</span> <span style="font-weight:400;color:#6e7681">— ex: BTCUSD=1, Gold=100, Copper=100 — voir Spécification MT5</span></label>
+      <input type="number" id="contractSize" value="1" step="any" oninput="saveContractSize(); calc()">
+    </div>
   </div>
 
   <div class="card">
@@ -209,16 +213,22 @@
   let direction = 'long';
   let riskPct = 2;
 
-  // Mémorisation capital + risque (localStorage)
+  // Mémorisation capital + risque + taille de contrat (localStorage)
   function saveCapital() {
     const v = document.getElementById('capital').value;
     if (v) localStorage.setItem('toritrade_calc_capital', v);
+  }
+  function saveContractSize() {
+    const v = document.getElementById('contractSize').value;
+    if (v) localStorage.setItem('toritrade_calc_contractsize', v);
   }
   function loadSaved() {
     const cap = localStorage.getItem('toritrade_calc_capital');
     if (cap) document.getElementById('capital').value = cap;
     const r = localStorage.getItem('toritrade_calc_risk');
     if (r) setRisk(parseInt(r));
+    const cs = localStorage.getItem('toritrade_calc_contractsize');
+    if (cs) document.getElementById('contractSize').value = cs;
   }
 
   function setDir(d) {
@@ -246,6 +256,7 @@
     const entree  = parseFloat(document.getElementById('entree').value) || 0;
     const sl      = parseFloat(document.getElementById('sl').value) || 0;
     const tp      = parseFloat(document.getElementById('tp').value) || 0;
+    const contractSize = parseFloat(document.getElementById('contractSize').value) || 1;
     const out     = document.getElementById('results');
 
     if (!capital || !entree || !sl) {
@@ -270,6 +281,7 @@
     const units   = position / entree;
     const posCapped = Math.min(position, capital);
     const overCapital = position > capital;
+    const volumeLots = riskDollars / (contractSize * slDist);
 
     // TP minimum 2:1
     const tpMin = direction === 'long' ? entree + slDist * 2 : entree - slDist * 2;
@@ -327,6 +339,9 @@
       '<div class="result-row"><span class="result-label">En unités</span>' +
       '<span class="result-value">' + fmt(units, units < 1 ? 6 : 4) + '<span class="result-sub">unités de l\'actif</span></span></div>' +
 
+      '<div class="result-row"><span class="result-label">📊 VOLUME MT5 (lots)</span>' +
+      '<span class="result-value big" style="color:#ffa657">' + fmt(volumeLots, volumeLots < 1 ? 2 : 2) + '<span class="result-sub">contrat = ' + fmt(contractSize, 0) + ' unité(s)/lot</span></span></div>' +
+
       '<div class="result-row"><span class="result-label">Perte si SL touché (vérif)</span>' +
       '<span class="result-value red">−$' + fmt(position * slPct / 100, 0) + '<span class="result-sub">= ' + riskPct + '% du capital ✅</span></span></div>' +
 
@@ -338,7 +353,8 @@
       '<div class="formula">Étape 1 — Risque $   : $' + fmt(capital, 0) + ' × ' + riskPct + '% = <span class="hl">$' + fmt(riskDollars, 0) + '</span>\n' +
       'Étape 2 — SL%        : $' + fmt(slDist) + ' ÷ $' + fmt(entree) + ' = <span class="hl">' + fmt(slPct, 2) + '%</span>\n' +
       'Étape 3 — Position   : $' + fmt(riskDollars, 0) + ' ÷ ' + fmt(slPct / 100, 4) + ' = <span class="hl">$' + fmt(position, 0) + '</span>\n' +
-      'Étape 4 — Vérif      : $' + fmt(position, 0) + ' × ' + fmt(slPct / 100, 4) + ' = <span class="hl">$' + fmt(position * slPct / 100, 0) + '</span> ✅</div>';
+      'Étape 4 — Vérif      : $' + fmt(position, 0) + ' × ' + fmt(slPct / 100, 4) + ' = <span class="hl">$' + fmt(position * slPct / 100, 0) + '</span> ✅\n' +
+      'Étape 5 — Volume MT5 : $' + fmt(riskDollars, 0) + ' ÷ (' + fmt(contractSize, 0) + ' × $' + fmt(slDist) + ') = <span class="hl">' + fmt(volumeLots, 2) + ' lot(s)</span></div>';
   }
 
   loadSaved();
