@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Calculatrice Position — ToriTrade</title>
+  <title>Calculatrice Position — Trading</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -150,7 +150,7 @@
 <div class="container">
 
   <div class="header">
-    <h1>🧮 Calculatrice Position — ToriTrade</h1>
+    <h1>🧮 Calculatrice Position — Trading</h1>
     <p>Capital × Risque% ÷ SL% = Position. Le size n'est jamais arbitraire.</p>
   </div>
 
@@ -171,8 +171,50 @@
       </div>
     </div>
     <div class="field-group" style="margin-top:12px">
+      <label>Plateforme d'exécution <span style="color:#3fb950">● mémorisé</span></label>
+      <div class="toggle-group">
+        <button class="toggle-btn active-risk" id="platMt5" onclick="setPlat('mt5')">🖥️ MT5 (lots)</button>
+        <button class="toggle-btn" id="platOanda" onclick="setPlat('oanda')">📈 OANDA / TradingView</button>
+      </div>
+    </div>
+
+    <div class="field-group" id="blocMt5" style="margin-top:12px">
       <label>Taille de contrat MT5 (1 lot = X unités) <span style="color:#3fb950">● mémorisé</span> <span style="font-weight:400;color:#6e7681">— ex: BTCUSD=1, Gold=100, Copper=100 — voir Spécification MT5</span></label>
       <input type="number" id="contractSize" value="1" step="any" oninput="saveContractSize(); calc()">
+    </div>
+
+    <div id="blocOanda" style="display:none;margin-top:12px">
+      <div style="background:#2d1416;border:1px solid #f85149;border-radius:8px;padding:12px;margin-bottom:12px;font-size:13px;color:#ffa198;line-height:1.6">
+        <b style="color:#ff7b72">🔴 LA VÉRIFICATION QUI FAIT FOI, C'EST TRADINGVIEW LUI-MÊME</b><br>
+        Une fois le <b>Stop Loss renseigné dans l'ordre</b>, TradingView affiche <b>« X % risque »</b> juste à côté du champ Volume.
+        <b style="color:#e6edf3">Ajuste le volume jusqu'à lire exactement « 1.00 % risque ».</b>
+        C'est la seule mesure exacte — elle vient de la plateforme, pas d'une conversion.<br>
+        <span style="color:#8b949e">Le calcul ci-dessous ne sert qu'à te donner un volume de départ.</span>
+      </div>
+      <div style="background:#161b22;border:1px solid #30363d;border-radius:8px;padding:12px;margin-bottom:12px;font-size:13px;color:#8b949e;line-height:1.6">
+        <b style="color:#e6edf3">Les 3 nombres se RECOPIENT du panneau d'ordre, sans rien calculer :</b><br>
+        <b style="color:#ffa657">1.</b> <b>Nb de ticks au Stop Loss</b> — écrit à droite du champ Stop Loss.
+        <i>ex : « 451.6 ticks » → tape 451.6</i><br>
+        <b style="color:#ffa657">2.</b> <b>Valeur du tick</b> — ligne « Valeur du tick », sous le champ Volume.
+        <i>ex : « 2,21 USD » → tape 2.21</i><br>
+        <b style="color:#ffa657">3.</b> <b>Volume affiché</b> — ce qui est actuellement dans la case Volume, quel qu'il soit.
+        <i>ex : « 2.21 » → tape 2.21</i><br>
+        <span style="color:#ff7b72">⚠️ Ne pas confondre avec « taille du lot » — ce n'est pas demandé ici.</span>
+      </div>
+      <div class="grid3">
+        <div class="field-group">
+          <label>Nb de ticks au SL</label>
+          <input type="number" id="tickSize" placeholder="ex: 451.6" step="any" oninput="calc()">
+        </div>
+        <div class="field-group">
+          <label>Valeur du tick ($)</label>
+          <input type="number" id="tickValue" placeholder="ex: 0.2" step="any" oninput="calc()">
+        </div>
+        <div class="field-group">
+          <label>...au volume de</label>
+          <input type="number" id="tickVol" placeholder="ex: 2.24" step="any" oninput="calc()">
+        </div>
+      </div>
     </div>
   </div>
 
@@ -198,6 +240,10 @@
         <label>Take Profit (optionnel)</label>
         <input type="number" id="tp" placeholder="ex: 67.44" step="any" oninput="calc()">
       </div>
+      <div class="field-group">
+        <label>Ratio R:R à tester (optionnel)</label>
+        <input type="number" id="rrCible" placeholder="ex: 1.5 · 3 · 4" step="any" oninput="calc()">
+      </div>
     </div>
   </div>
 
@@ -216,19 +262,27 @@
   // Mémorisation capital + risque + taille de contrat (localStorage)
   function saveCapital() {
     const v = document.getElementById('capital').value;
-    if (v) localStorage.setItem('toritrade_calc_capital', v);
+    try { if (v) localStorage.setItem('toritrade_calc_capital', v); } catch(e) {}
   }
   function saveContractSize() {
     const v = document.getElementById('contractSize').value;
-    if (v) localStorage.setItem('toritrade_calc_contractsize', v);
+    try { if (v) localStorage.setItem('toritrade_calc_contractsize', v); } catch(e) {}
   }
+  var plateforme = 'mt5';
+
   function loadSaved() {
+    try {
+      const pf = localStorage.getItem('toritrade_calc_plateforme');
+      if (pf) setPlat(pf);
+    } catch(e) {}
+    try {
     const cap = localStorage.getItem('toritrade_calc_capital');
     if (cap) document.getElementById('capital').value = cap;
     const r = localStorage.getItem('toritrade_calc_risk');
     if (r) setRisk(parseInt(r));
     const cs = localStorage.getItem('toritrade_calc_contractsize');
     if (cs) document.getElementById('contractSize').value = cs;
+    } catch(e) {}
   }
 
   function setDir(d) {
@@ -238,9 +292,19 @@
     calc();
   }
 
+  function setPlat(pf) {
+    plateforme = pf;
+    try { localStorage.setItem('toritrade_calc_plateforme', pf); } catch(e) {}
+    document.getElementById('platMt5').className   = 'toggle-btn' + (pf === 'mt5'   ? ' active-risk' : '');
+    document.getElementById('platOanda').className = 'toggle-btn' + (pf === 'oanda' ? ' active-risk' : '');
+    document.getElementById('blocMt5').style.display   = pf === 'mt5'   ? '' : 'none';
+    document.getElementById('blocOanda').style.display = pf === 'oanda' ? '' : 'none';
+    calc();
+  }
+
   function setRisk(r) {
     riskPct = r;
-    localStorage.setItem('toritrade_calc_risk', r);
+    try { localStorage.setItem('toritrade_calc_risk', r); } catch(e) {}
     document.getElementById('risk1').className = 'toggle-btn' + (r === 1 ? ' active-risk' : '');
     document.getElementById('risk2').className = 'toggle-btn' + (r === 2 ? ' active-risk' : '');
     calc();
@@ -283,8 +347,43 @@
     const overCapital = position > capital;
     const volumeLots = riskDollars / (contractSize * slDist);
 
+    // --- Mode OANDA / TradingView : dimensionnement par la valeur du tick ---
+    const nbTicks   = parseFloat(document.getElementById('tickSize').value)  || 0;
+    const tickValue = parseFloat(document.getElementById('tickValue').value) || 0;
+    const tickVol   = parseFloat(document.getElementById('tickVol').value)   || 0;
+    const oandaOk   = plateforme === 'oanda' && nbTicks > 0 && tickValue > 0 && tickVol > 0;
+    const tickSize  = nbTicks > 0 ? slDist / nbTicks : 0;
+    const valTick1  = tickVol > 0 ? tickValue / tickVol : 0;
+    const volOanda  = (nbTicks > 0 && valTick1 > 0) ? riskDollars / (nbTicks * valTick1) : 0;
+    const verifOanda = volOanda * nbTicks * valTick1;
+    // La valeur du tick affichee par TradingView est arrondie a 1 decimale :
+    // la vraie valeur est dans [affichee-0.05 ; affichee+0.05], d'ou une fourchette de volume.
+    const vt1Min = tickVol > 0 ? Math.max(tickValue - 0.05, 0.0001) / tickVol : 0;
+    const vt1Max = tickVol > 0 ? (tickValue + 0.05) / tickVol : 0;
+    const volMin = (nbTicks > 0 && vt1Max > 0) ? riskDollars / (nbTicks * vt1Max) : 0;
+    const volMax = (nbTicks > 0 && vt1Min > 0) ? riskDollars / (nbTicks * vt1Min) : 0;
+    const impreciseOanda = oandaOk && (volMax - volMin) > volOanda * 0.03;
+
     // TP minimum 2:1
     const tpMin = direction === 'long' ? entree + slDist * 2 : entree - slDist * 2;
+
+    // TP pour un ratio R:R personnalisé (optionnel)
+    const rrCible = parseFloat(document.getElementById('rrCible').value) || 0;
+    let tpCibleHtml = '';
+    if (rrCible > 0) {
+      const tpCible   = direction === 'long' ? entree + slDist * rrCible : entree - slDist * rrCible;
+      const gainCible = slDist * rrCible;
+      const cibleClass = rrCible >= 2 ? 'green' : 'red';
+      const cibleNote  = rrCible >= 2
+        ? '✅ au-dessus du minimum 2:1'
+        : '❌ SOUS le minimum 2:1 — il faudrait ' + fmt(100 / (1 + rrCible), 0) + '% de réussite juste pour être à l\'équilibre';
+      tpCibleHtml =
+        '<div class="result-row"><span class="result-label">TP à ' + fmt(rrCible, 2) + ':1</span>' +
+        '<span class="result-value ' + cibleClass + '">$' + fmt(tpCible) +
+        '<span class="result-sub">gain +$' + fmt(position * gainCible / entree, 0) + ' · ' + fmt(gainCible / entree * 100, 2) + '% du prix</span></span></div>' +
+        '<div class="result-row"><span class="result-label">Verdict de ce ratio</span>' +
+        '<span class="result-value ' + cibleClass + '" style="font-size:0.9rem">' + cibleNote + '</span></div>';
+    }
 
     // R:R si TP fourni
     let rrHtml = '';
@@ -339,22 +438,46 @@
       '<div class="result-row"><span class="result-label">En unités</span>' +
       '<span class="result-value">' + fmt(units, units < 1 ? 6 : 4) + '<span class="result-sub">unités de l\'actif</span></span></div>' +
 
-      '<div class="result-row"><span class="result-label">📊 VOLUME MT5 (lots)</span>' +
-      '<span class="result-value big" style="color:#ffa657">' + fmt(volumeLots, volumeLots < 1 ? 2 : 2) + '<span class="result-sub">contrat = ' + fmt(contractSize, 0) + ' unité(s)/lot</span></span></div>' +
+      (plateforme === 'mt5'
+        ? '<div class="result-row"><span class="result-label">📊 VOLUME MT5 (lots)</span>' +
+          '<span class="result-value big" style="color:#ffa657">' + fmt(volumeLots, 2) + '<span class="result-sub">contrat = ' + fmt(contractSize, 0) + ' unité(s)/lot</span></span></div>'
+        : (oandaOk
+            ? '<div class="result-row"><span class="result-label">📈 VOLUME OANDA / TradingView</span>' +
+              '<span class="result-value big" style="color:#ffa657">' + fmt(volOanda, 2) + '<span class="result-sub">' + fmt(nbTicks, 1) + ' ticks × $' + fmt(valTick1, 6) + '/tick (à volume 1)</span></span></div>' +
+              (impreciseOanda
+                ? '<div class="result-row"><span class="result-label">⚠️ Fourchette (tick arrondi)</span>' +
+                  '<span class="result-value orange">' + fmt(volMin, 2) + ' à ' + fmt(volMax, 2) +
+                  '<span class="result-sub">la valeur du tick affichée est arrondie — cette plage est réelle</span></span></div>'
+                : '') +
+              '<div class="verdict verdict-high" style="margin-top:14px"><b>🔴 VÉRIFIE DANS TRADINGVIEW AVANT D\'ENVOYER</b>' +
+              'Renseigne le Stop Loss dans l\'ordre, puis ajuste le volume jusqu\'à lire exactement ' +
+              '<b>« ' + fmt(riskPct, 2) + ' % risque »</b> à côté du champ Volume. ' +
+              'C\'est la seule mesure exacte : la valeur du tick affichée est arrondie à 1 décimale et peut fausser ce calcul de plusieurs pourcents.<br><br>' +
+              '<b>Et contrôle le signe :</b> ton Stop Loss doit afficher une <b>PERTE</b> sur le graphique. S\'il affiche un gain, entrée et stop sont inversés.</div>'
+            : '<div class="result-row"><span class="result-label">📈 VOLUME OANDA / TradingView</span>' +
+              '<span class="result-value" style="color:#ffa657">— <span class="result-sub">remplis taille du tick, valeur du tick et volume affiché</span></span></div>')) +
 
-      '<div class="result-row"><span class="result-label">Perte si SL touché (vérif)</span>' +
-      '<span class="result-value red">−$' + fmt(position * slPct / 100, 0) + '<span class="result-sub">= ' + riskPct + '% du capital ✅</span></span></div>' +
+      (plateforme === 'mt5'
+        ? '<div class="result-row"><span class="result-label">Perte si SL touché (vérif)</span>' +
+          '<span class="result-value red">−$' + fmt(position * slPct / 100, 0) + '<span class="result-sub">= ' + riskPct + '% du capital ✅</span></span></div>'
+        : '') +
 
       '<div class="result-row"><span class="result-label">TP minimum (2:1)</span>' +
       '<span class="result-value orange">$' + fmt(tpMin) + '<span class="result-sub">le premier S/R valide doit être ' + (direction === 'long' ? 'au-dessus' : 'en dessous') + '</span></span></div>' +
 
-      rrHtml + verdict + overWarn +
+      tpCibleHtml + rrHtml + verdict + overWarn +
 
       '<div class="formula">Étape 1 — Risque $   : $' + fmt(capital, 0) + ' × ' + riskPct + '% = <span class="hl">$' + fmt(riskDollars, 0) + '</span>\n' +
       'Étape 2 — SL%        : $' + fmt(slDist) + ' ÷ $' + fmt(entree) + ' = <span class="hl">' + fmt(slPct, 2) + '%</span>\n' +
       'Étape 3 — Position   : $' + fmt(riskDollars, 0) + ' ÷ ' + fmt(slPct / 100, 4) + ' = <span class="hl">$' + fmt(position, 0) + '</span>\n' +
       'Étape 4 — Vérif      : $' + fmt(position, 0) + ' × ' + fmt(slPct / 100, 4) + ' = <span class="hl">$' + fmt(position * slPct / 100, 0) + '</span> ✅\n' +
-      'Étape 5 — Volume MT5 : $' + fmt(riskDollars, 0) + ' ÷ (' + fmt(contractSize, 0) + ' × $' + fmt(slDist) + ') = <span class="hl">' + fmt(volumeLots, 2) + ' lot(s)</span></div>';
+      (plateforme === 'mt5'
+        ? 'Étape 5 — Volume MT5 : $' + fmt(riskDollars, 0) + ' ÷ (' + fmt(contractSize, 0) + ' × $' + fmt(slDist) + ') = <span class="hl">' + fmt(volumeLots, 2) + ' lot(s)</span>'
+        : (oandaOk
+            ? 'Étape 5 — Nb de ticks : <span class="hl">' + fmt(nbTicks, 1) + ' ticks</span> (recopié du panneau — 1 tick = ' + fmt(tickSize, 5) + ')\n' +
+              'Étape 6 — Tick à vol 1: $' + fmt(tickValue, 4) + ' ÷ ' + fmt(tickVol, 2) + ' = <span class="hl">$' + fmt(valTick1, 6) + '</span>\n' +
+              'Étape 7 — Volume     : $' + fmt(riskDollars, 0) + ' ÷ (' + fmt(nbTicks, 0) + ' × $' + fmt(valTick1, 6) + ') = <span class="hl">' + fmt(volOanda, 2) + '</span>'
+            : 'Étape 5 — Volume OANDA : renseigne les 3 champs du bloc OANDA')) + '</div>';
   }
 
   loadSaved();
