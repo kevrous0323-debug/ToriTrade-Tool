@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Checklist Tori (archive) — Avant chaque trade</title>
+  <title>Checklist A+ — Trading Kevin</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -339,77 +339,120 @@
     .btn-expand:hover {
       background: #1f3d1f;
     }
+  
+    /* Checklist A+ — catégorie en direct */
+    .item-tag.tag-opt { background: #2b2a1d; color: #e3b341; }
+    .verdict.show { display: block; }
+    .verdict.cat-aplus { border-color: #238636; background: #0f2a16; }
+    .verdict.cat-a { border-color: #1f6feb; background: #0d1d33; }
+    .verdict.cat-non { border-color: #da3633; background: #2a1012; }
+    .verdict .manque { margin-top: 8px; font-size: 0.82rem; color: #c9d1d9; text-align: left; }
+    .verdict .manque b { color: #ff7b72; }
+    .regle { font-size: 0.72rem; color: #8b949e; }
   </style>
 </head>
 <body>
 <div class="container">
 
   <div class="header">
-    <h1>📈 Checklist Tori (archive)</h1>
-    <p>Complète chaque section avant d'entrer dans un trade · v2 (21 sept. 2026) — fiches, test du mur, plafonds 0,25 / 0,50 %</p>
+    <h1>⭐ Checklist A+ — les 5 règles d'or</h1>
+    <p>R27 à R31 (2 nov. 2026, d'après Brad Goh) · cocher dans l'ordre · la catégorie se calcule toute seule</p>
   </div>
 
-  <!-- PROGRESS GLOBAL -->
   <div class="progress-global">
     <span style="font-size:0.85rem; color:#8b949e; white-space:nowrap;">Progression</span>
     <div class="progress-bar-wrap">
       <div class="progress-bar-fill" id="globalBar"></div>
     </div>
-    <span class="progress-text" id="globalText">0 / 31</span>
+    <span class="progress-text" id="globalText">0 / 0</span>
   </div>
 
-  <!-- SECTION 1 — LE PLAN -->
-  <div class="section open" id="s1">
-    <div class="section-header" onclick="toggleSection('s1')">
+  <!-- CATÉGORIE EN DIRECT -->
+  <div class="verdict show cat-non" id="verdict">
+    <div class="verdict-icon" id="vIcon">⏳</div>
+    <div class="verdict-title" id="vTitle">Pas encore de trade</div>
+    <div class="verdict-sub" id="vSub">Coche les cases dans l'ordre.</div>
+    <div class="manque" id="vManque"></div>
+  </div>
+
+  <div class="section open" id="s0">
+    <div class="section-header" onclick="toggleSection('s0')">
       <div class="section-title">
-        <span class="section-icon">📋</span>
+        <span class="section-icon">🛡️</span>
         <div>
-          <div>Avant tout — le plan</div>
-          <div style="font-size:0.75rem; color:#8b949e; font-weight:400">Pas de fiche = pas de trade</div>
+          <div>Garde-fous du jour</div>
+          <div style="font-size:0.75rem; color:#8b949e; font-weight:400">R30 · R31 — avant même de regarder le graphique</div>
         </div>
       </div>
       <div style="display:flex; align-items:center; gap:10px">
-        <span class="section-badge" id="badge-s1">0/5</span>
+        <span class="section-badge" id="badge-s0">0/4</span>
         <span class="section-chevron">▼</span>
       </div>
     </div>
     <div class="section-body">
-      <div class="item" onclick="toggle(this)">
+      <div class="item" data-k="m" onclick="toggle(this)">
         <div class="checkbox"><span class="checkbox-tick">✓</span></div>
-        <span class="item-text">Ce trade correspond à une <b>fiche écrite d'avance</b> (plan de la semaine)</span>
-        <span class="item-tag tag-ftmo">FICHE</span>
+        <span class="item-text">Moins de <b>3 trades</b> aujourd'hui</span>
+        <span class="item-tag tag-ftmo">R30</span>
       </div>
-      <div class="item" onclick="toggle(this)">
+      <div class="item" data-k="m" onclick="toggle(this)">
         <div class="checkbox"><span class="checkbox-tick">✓</span></div>
-        <span class="item-text"><b>Mode de sortie choisi</b> : TP fixe ou runner (Safety Line) — écrit avant l'entrée</span>
-        <span class="item-tag tag-ftmo">FICHE</span>
+        <span class="item-text">Moins de <b>2 pertes</b> aujourd'hui (2 pertes = journée finie)</span>
+        <span class="item-tag tag-ftmo">R30</span>
       </div>
-      <div class="item" onclick="toggle(this)">
+      <div class="item" data-k="m" onclick="toggle(this)">
         <div class="checkbox"><span class="checkbox-tick">✓</span></div>
-        <span class="item-text">Jour autorisé : <b>lundi à jeudi</b> (§4octies — pas d'entrée le vendredi)</span>
-        <span class="item-tag tag-d">§4octies</span>
+        <span class="item-text">Au moins <b>10 minutes</b> depuis la dernière perte, et ce n'est <b>pas la bougie qui suit</b> une perte</span>
+        <span class="item-tag tag-ftmo">R30</span>
       </div>
-      <div class="item" onclick="toggle(this)">
+      <div class="item" data-k="m" onclick="toggle(this)">
         <div class="checkbox"><span class="checkbox-tick">✓</span></div>
-        <span class="item-text">Aucun trade <b>en sens inverse</b> sur cet actif depuis la dernière clôture 4H (§4quindecies)</span>
-        <span class="item-tag tag-ftmo">§4quindecies</span>
-      </div>
-      <div class="item" onclick="toggle(this)">
-        <div class="checkbox"><span class="checkbox-tick">✓</span></div>
-        <span class="item-text">Lecture sur <b>FTMO_OANDA</b>, TT Lines au bon <b>sens</b> et au bon <b>mode</b> (§4septies)</span>
-        <span class="item-tag tag-w">OANDA</span>
+        <span class="item-text">Ni <b>pour me refaire</b>, ni <b>parce que ça va bien</b> : je suis calme, la taille vient du calcul</span>
+        <span class="item-tag tag-ftmo">R31</span>
       </div>
     </div>
   </div>
 
-  <!-- SECTION 2 — CONTEXTE -->
+  <div class="section" id="s1">
+    <div class="section-header" onclick="toggleSection('s1')">
+      <div class="section-title">
+        <span class="section-icon">①</span>
+        <div>
+          <div>Biais aligné</div>
+          <div style="font-size:0.75rem; color:#8b949e; font-weight:400">Le petit timeframe va dans le sens du 4H (R25)</div>
+        </div>
+      </div>
+      <div style="display:flex; align-items:center; gap:10px">
+        <span class="section-badge" id="badge-s1">0/3</span>
+        <span class="section-chevron">▼</span>
+      </div>
+    </div>
+    <div class="section-body">
+      <div class="item" data-k="m" onclick="toggle(this)">
+        <div class="checkbox"><span class="checkbox-tick">✓</span></div>
+        <span class="item-text"><b>Tendance 4H</b> lue sur KT Structure : ▲ ou ▼ (confirmée ou jeune), pas indécise</span>
+        <span class="item-tag tag-4h">4H</span>
+      </div>
+      <div class="item" data-k="m" onclick="toggle(this)">
+        <div class="checkbox"><span class="checkbox-tick">✓</span></div>
+        <span class="item-text"><b>Tendance interne 1H / 15 min</b> dans le même sens (« dans le sens du 4H »), sinon j'attends</span>
+        <span class="item-tag tag-1h">1H</span>
+      </div>
+      <div class="item" data-k="m" onclick="toggle(this)">
+        <div class="checkbox"><span class="checkbox-tick">✓</span></div>
+        <span class="item-text">Mon trade va <b>dans ce sens</b> (long en hausse, short en baisse)</span>
+        <span class="item-tag tag-4h">R25</span>
+      </div>
+    </div>
+  </div>
+
   <div class="section" id="s2">
     <div class="section-header" onclick="toggleSection('s2')">
       <div class="section-title">
-        <span class="section-icon">🌍</span>
+        <span class="section-icon">②</span>
         <div>
-          <div>Contexte et structure</div>
-          <div style="font-size:0.75rem; color:#8b949e; font-weight:400">TT Structure + radar</div>
+          <div>Point d’intérêt (POI)</div>
+          <div style="font-size:0.75rem; color:#8b949e; font-weight:400">Une zone à haute probabilité — et le prix DEDANS</div>
         </div>
       </div>
       <div style="display:flex; align-items:center; gap:10px">
@@ -418,315 +461,241 @@
       </div>
     </div>
     <div class="section-body">
-      <div class="item" onclick="toggle(this)">
+      <div class="item" data-k="m" onclick="toggle(this)">
         <div class="checkbox"><span class="checkbox-tick">✓</span></div>
-        <span class="item-text">Structure <b>Daily</b> lue : haussière / baissière / range</span>
-        <span class="item-tag tag-d">D</span>
-      </div>
-      <div class="item" onclick="toggle(this)">
-        <div class="checkbox"><span class="checkbox-tick">✓</span></div>
-        <span class="item-text">Structure <b>4H</b> lue et sens noté : avec / contre / CHoCH non confirmé</span>
+        <span class="item-text"><b>Zone</b> 4H (offre / demande, OB, FVG, flip zone) <b>alignée avec le trend</b></span>
         <span class="item-tag tag-4h">4H</span>
       </div>
-      <div class="item" onclick="toggle(this)">
+      <div class="item" data-k="m" onclick="toggle(this)">
         <div class="checkbox"><span class="checkbox-tick">✓</span></div>
-        <span class="item-text"><b>Liquidité</b> repérée au-dessus et en dessous (4H et 1H)</span>
-        <span class="item-tag tag-4h">4H</span>
+        <span class="item-text">La zone a <b>balayé de la liquidité</b>, ou il y a <b>de la liquidité juste à côté</b></span>
+        <span class="item-tag tag-w">LIQ</span>
       </div>
-      <div class="item" onclick="toggle(this)">
+      <div class="item" data-k="m" onclick="toggle(this)">
         <div class="checkbox"><span class="checkbox-tick">✓</span></div>
-        <span class="item-text"><b>Radar lu</b> : aucun événement majeur dans les heures qui suivent (sinon TP fixe)</span>
-        <span class="item-tag tag-ftmo">RADAR</span>
+        <span class="item-text">Le prix est <b>DANS la zone</b>, pas « près de »</span>
+        <span class="item-tag tag-4h">POI</span>
+      </div>
+      <div class="item" data-k="m" onclick="toggle(this)">
+        <div class="checkbox"><span class="checkbox-tick">✓</span></div>
+        <span class="item-text"><b>Discount</b> pour un long, <b>premium</b> pour un short (range du dernier BOS 4H) — pas au milieu</span>
+        <span class="item-tag tag-d">R26</span>
       </div>
     </div>
   </div>
 
-  <!-- SECTION 3 — LA LIGNE -->
   <div class="section" id="s3">
     <div class="section-header" onclick="toggleSection('s3')">
       <div class="section-title">
-        <span class="section-icon">📐</span>
+        <span class="section-icon">③</span>
         <div>
-          <div>La ligne</div>
-          <div style="font-size:0.75rem; color:#8b949e; font-weight:400">Critères de Tori</div>
+          <div>Sweep + market shift</div>
+          <div style="font-size:0.75rem; color:#8b949e; font-weight:400">« Pas de sweep, pas d’entrée »</div>
         </div>
       </div>
       <div style="display:flex; align-items:center; gap:10px">
-        <span class="section-badge" id="badge-s3">0/6</span>
+        <span class="section-badge" id="badge-s3">0/2</span>
         <span class="section-chevron">▼</span>
       </div>
     </div>
     <div class="section-body">
-      <div class="item" onclick="toggle(this)">
+      <div class="item" data-k="m" onclick="toggle(this)">
         <div class="checkbox"><span class="checkbox-tick">✓</span></div>
-        <span class="item-text">Tracée au <b>Ray tool</b> ; le prix n'a <b>jamais traversé</b> entre le point A et le point B</span>
-        <span class="item-tag tag-4h">4H</span>
+        <span class="item-text"><b>Sweep</b> de liquidité dans la zone (mèche au-delà, retour)</span>
+        <span class="item-tag tag-15m">OBLIG.</span>
       </div>
-      <div class="item" onclick="toggle(this)">
+      <div class="item" data-k="ms" onclick="toggle(this)">
         <div class="checkbox"><span class="checkbox-tick">✓</span></div>
-        <span class="item-text"><b>3 touches ou plus</b>, chacune à moins de <b>0,2 %</b> de la ligne (table TT Lines)</span>
-        <span class="item-tag tag-4h">4H</span>
-      </div>
-      <div class="item" onclick="toggle(this)">
-        <div class="checkbox"><span class="checkbox-tick">✓</span></div>
-        <span class="item-text"><b>6 bougies ou plus</b> entre deux touches (sinon c'est le même tap)</span>
-        <span class="item-tag tag-4h">4H</span>
-      </div>
-      <div class="item" onclick="toggle(this)">
-        <div class="checkbox"><span class="checkbox-tick">✓</span></div>
-        <span class="item-text"><b>Data ≥ 7 jours</b> entre la première et la dernière touche (idéal : 3 semaines)</span>
-        <span class="item-tag tag-4h">4H</span>
-      </div>
-      <div class="item" onclick="toggle(this)">
-        <div class="checkbox"><span class="checkbox-tick">✓</span></div>
-        <span class="item-text"><b>Pente mesurée en %/jour</b> — au-delà de ≈ 1 %/jour, signal faible (décélération, pas retournement)</span>
-        <span class="item-tag tag-4h">4H</span>
-      </div>
-      <div class="item" onclick="toggle(this)">
-        <div class="checkbox"><span class="checkbox-tick">✓</span></div>
-        <span class="item-text"><b>Type de setup nommé</b> : Setup 1 (sweep & reclaim / bounce) ou Setup 2 (cassure : 2 touches, 3 touches ⭐, Break &amp; Retest)</span>
-        <span class="item-tag tag-1h">SETUP</span>
+        <span class="item-text"><b>Market shift</b> : cassure de structure en <b>clôture 15 min</b> (KT : « BOS + iCHoCH · fin pullback »)</span>
+        <span class="item-tag tag-opt">A+</span>
       </div>
     </div>
   </div>
 
-  <!-- SECTION 4 — DÉCLENCHEUR ET NIVEAUX -->
   <div class="section" id="s4">
     <div class="section-header" onclick="toggleSection('s4')">
       <div class="section-title">
-        <span class="section-icon">🎯</span>
+        <span class="section-icon">④</span>
         <div>
-          <div>Déclencheur et niveaux</div>
-          <div style="font-size:0.75rem; color:#8b949e; font-weight:400">Clôture, SL, TP, test du mur</div>
+          <div>Timing</div>
+          <div style="font-size:0.75rem; color:#8b949e; font-weight:400">R29 — tes fenêtres</div>
         </div>
       </div>
       <div style="display:flex; align-items:center; gap:10px">
-        <span class="section-badge" id="badge-s4">0/7</span>
+        <span class="section-badge" id="badge-s4">0/2</span>
         <span class="section-chevron">▼</span>
       </div>
     </div>
     <div class="section-body">
-      <div class="item" onclick="toggle(this)">
+      <div class="item" data-k="tm" onclick="toggle(this)">
         <div class="checkbox"><span class="checkbox-tick">✓</span></div>
-        <span class="item-text">Déclencheur = <b>bougie 4H FERMÉE</b> au-delà du niveau — <b>jamais une mèche</b>, jamais « le prix est dans la zone »</span>
-        <span class="item-tag tag-4h">4H</span>
+        <span class="item-text">Dans <b>ma fenêtre</b> : <b>20 h – 0 h ET</b> (soirée / Asie) ou <b>8 h – 11 h ET</b> (New York) · jamais London</span>
+        <span class="item-tag tag-opt">A+</span>
       </div>
-      <div class="item" onclick="toggle(this)">
+      <div class="item" data-k="m" onclick="toggle(this)">
         <div class="checkbox"><span class="checkbox-tick">✓</span></div>
-        <span class="item-text">Si cassure : <b>pas de retour de l'autre côté en 3 bougies</b> (sinon c'était un sweep)</span>
-        <span class="item-tag tag-4h">4H</span>
-      </div>
-      <div class="item" onclick="toggle(this)">
-        <div class="checkbox"><span class="checkbox-tick">✓</span></div>
-        <span class="item-text">Confirmation présente : <b>retest qui clôture du bon côté</b>, ou bougie de reprise pour un sweep</span>
-        <span class="item-tag tag-4h">4H</span>
-      </div>
-      <div class="item" onclick="toggle(this)">
-        <div class="checkbox"><span class="checkbox-tick">✓</span></div>
-        <span class="item-text"><b>SL au-delà de la liquidité</b> + marge (Or 3 $ · Crude 0,10 <i>min 0,30</i> · Cuivre 0,50 · Nasdaq 20 pts · BTC 80 $) — <b>jamais sur la ligne ni sur le niveau visible</b></span>
-        <span class="item-tag tag-15m">SL</span>
-      </div>
-      <div class="item" onclick="toggle(this)">
-        <div class="checkbox"><span class="checkbox-tick">✓</span></div>
-        <span class="item-text"><b>TP = premier obstacle</b> rencontré (niveau, liquidité 1H, liquidité 4H, trendline), placé <b>un peu avant</b> (≈ 0,2 %)</span>
-        <span class="item-tag tag-15m">TP</span>
-      </div>
-      <div class="item" onclick="toggle(this)">
-        <div class="checkbox"><span class="checkbox-tick">✓</span></div>
-        <span class="item-text"><b>Test du mur</b> : distance jusqu'au premier obstacle <b>≥ 2 × distance au SL</b></span>
-        <span class="item-tag tag-ftmo">TEST</span>
-      </div>
-      <div class="item" onclick="toggle(this)">
-        <div class="checkbox"><span class="checkbox-tick">✓</span></div>
-        <span class="item-text"><b>R:R ≥ 2:1</b> au TP retenu</span>
-        <span class="item-tag tag-15m">R:R</span>
+        <span class="item-text"><b>Pas</b> dans l'heure après la réouverture du dimanche (18 h – 19 h ET) ni autour du rollover (≈ 16 h 55 – 17 h 30 ET)</span>
+        <span class="item-tag tag-ftmo">SPREAD</span>
       </div>
     </div>
   </div>
 
-  <!-- SECTION 5 — TAILLE ET ORDRE -->
   <div class="section" id="s5">
     <div class="section-header" onclick="toggleSection('s5')">
       <div class="section-title">
-        <span class="section-icon">💰</span>
+        <span class="section-icon">⑤</span>
         <div>
-          <div>Taille et ordre</div>
-          <div style="font-size:0.75rem; color:#8b949e; font-weight:400">§4quaterdecies — jusqu'au retour à 100 000 $</div>
+          <div>R:R ≥ 2</div>
+          <div style="font-size:0.75rem; color:#8b949e; font-weight:400">Calculé, jamais de tête</div>
         </div>
       </div>
       <div style="display:flex; align-items:center; gap:10px">
-        <span class="section-badge" id="badge-s5">0/5</span>
+        <span class="section-badge" id="badge-s5">0/3</span>
         <span class="section-chevron">▼</span>
       </div>
     </div>
     <div class="section-body">
-      <div class="item" onclick="toggle(this)">
+      <div class="item" data-k="m" onclick="toggle(this)">
         <div class="checkbox"><span class="checkbox-tick">✓</span></div>
-        <span class="item-text">Catégorie tranchée : <b>bon trade</b> (A+ dans le sens du 4H) = 0,50 % · <b>petit trade</b> = 0,25 % · en cas de doute, petit trade</span>
-        <span class="item-tag tag-ftmo">§4quaterdecies</span>
+        <span class="item-text"><code>calc-trade.py</code> passé : <b>SL à l'invalidation</b> + marge R7 + <b>spread</b></span>
+        <span class="item-tag tag-ftmo">R7</span>
       </div>
-      <div class="item" onclick="toggle(this)">
+      <div class="item" data-k="m" onclick="toggle(this)">
         <div class="checkbox"><span class="checkbox-tick">✓</span></div>
-        <span class="item-text"><b>Lot calculé</b> = 240 $ (ou 480 $) ÷ (distance au SL × valeur du point), arrondi vers le bas</span>
-        <span class="item-tag tag-ftmo">CALCUL</span>
+        <span class="item-text"><b>TP avant la liquidité</b> d'en face (R23) et <b>R ≥ 2</b> (sinon je passe, peu importe la confiance)</span>
+        <span class="item-tag tag-ftmo">R ≥ 2</span>
       </div>
-      <div class="item" onclick="toggle(this)">
+      <div class="item" data-k="m" onclick="toggle(this)">
         <div class="checkbox"><span class="checkbox-tick">✓</span></div>
-        <span class="item-text"><b>Étiquette du SL lue en dollars</b> dans le ticket : ≤ <b>0,25 % des capitaux propres</b> (≈ 236 $) — 0,50 % seulement si vraiment en ma faveur — pas le % affiché</span>
-        <span class="item-tag tag-ftmo">CALCUL</span>
-      </div>
-      <div class="item" onclick="toggle(this)">
-        <div class="checkbox"><span class="checkbox-tick">✓</span></div>
-        <span class="item-text"><b>SL et TP activés dans le même ticket</b> avant de valider</span>
-        <span class="item-tag tag-15m">ORDRE</span>
-      </div>
-      <div class="item" onclick="toggle(this)">
-        <div class="checkbox"><span class="checkbox-tick">✓</span></div>
-        <span class="item-text">Risque <b>cumulé du jour</b> vérifié (limite journalière FTMO 5 % ; pas plus de 2 positions à risque en même temps)</span>
-        <span class="item-tag tag-ftmo">FTMO</span>
+        <span class="item-text">Lot = <b>0,25 %</b> des capitaux propres, arrondi vers le bas (R11) · au plus 2 positions à risque (R13)</span>
+        <span class="item-tag tag-ftmo">R11</span>
       </div>
     </div>
   </div>
 
-  <!-- SECTION 6 — APRÈS L'ENTRÉE -->
   <div class="section" id="s6">
     <div class="section-header" onclick="toggleSection('s6')">
       <div class="section-title">
-        <span class="section-icon">🔔</span>
+        <span class="section-icon">📝</span>
         <div>
-          <div>Après l'entrée</div>
-          <div style="font-size:0.75rem; color:#8b949e; font-weight:400">Ce qui protège le trade et alimente le journal</div>
+          <div>Exécution et journal</div>
+          <div style="font-size:0.75rem; color:#8b949e; font-weight:400">R31 — le trade se termine au journal</div>
         </div>
       </div>
       <div style="display:flex; align-items:center; gap:10px">
-        <span class="section-badge" id="badge-s6">0/4</span>
+        <span class="section-badge" id="badge-s6">0/3</span>
         <span class="section-chevron">▼</span>
       </div>
     </div>
     <div class="section-body">
-      <div class="item" onclick="toggle(this)">
+      <div class="item" data-k="m" onclick="toggle(this)">
         <div class="checkbox"><span class="checkbox-tick">✓</span></div>
-        <span class="item-text"><b>Alerte de sortie posée</b> (Safety Line ou ligne du bounce), déclenchement « une fois par clôture de barre »</span>
-        <span class="item-tag tag-1h">ALERTE</span>
+        <span class="item-text"><b>SL et TP posés dans le ticket</b> avant de valider</span>
+        <span class="item-tag tag-ftmo">R31</span>
       </div>
-      <div class="item" onclick="toggle(this)">
+      <div class="item" data-k="m" onclick="toggle(this)">
         <div class="checkbox"><span class="checkbox-tick">✓</span></div>
-        <span class="item-text"><b>Téléphone en sonnerie</b> pendant les heures de marché tant que la position est ouverte</span>
-        <span class="item-tag tag-1h">ALERTE</span>
-      </div>
-      <div class="item" onclick="toggle(this)">
-        <div class="checkbox"><span class="checkbox-tick">✓</span></div>
-        <span class="item-text"><b>Capture envoyée au journal</b> avec <code>fiche</code> true / false</span>
+        <span class="item-text">Je note <b>l'heure</b>, <b>la session</b> et <b>mon émotion à l'entrée</b></span>
         <span class="item-tag tag-d">JOURNAL</span>
       </div>
-      <div class="item" onclick="toggle(this)">
+      <div class="item" data-k="m" onclick="toggle(this)">
         <div class="checkbox"><span class="checkbox-tick">✓</span></div>
-        <span class="item-text">À la clôture : relever <b>MFE</b> et <b>prix après la sortie</b> (sinon « TP fixe ou runner ? » reste sans réponse)</span>
+        <span class="item-text">Journal <b>le jour même</b>, à la sortie (sinon le contexte est perdu)</span>
         <span class="item-tag tag-d">JOURNAL</span>
       </div>
     </div>
   </div>
 
-  <!-- TRADE ANNULÉ -->
   <div class="cancel-section">
-    <div class="cancel-title">🚫 Trade annulé si...</div>
-    <div class="cancel-item"><div class="cancel-dot"></div><b>Aucune fiche</b> écrite d'avance ne prévoit ce trade</div>
-    <div class="cancel-item"><div class="cancel-dot"></div>Le <b>premier obstacle donne moins de 2R</b> (test du mur)</div>
-    <div class="cancel-item"><div class="cancel-dot"></div>Le SL devrait se placer <b>sur un niveau ou une ligne visible</b></div>
-    <div class="cancel-item"><div class="cancel-dot"></div>C'est un <b>vendredi</b> (§4octies)</div>
-    <div class="cancel-item"><div class="cancel-dot"></div>La <b>ligne a été redessinée</b> pour faire apparaître le signal</div>
-    <div class="cancel-item"><div class="cancel-dot"></div>Le <b>lot ne sort pas du calcul</b> (émotion : fermer la plateforme 15 min)</div>
-    <div class="cancel-item"><div class="cancel-dot"></div>Le déclencheur n'est <b>pas une bougie fermée</b></div>
-    <div class="cancel-item"><div class="cancel-dot"></div>Un trade en sens inverse a été stoppé <b>depuis moins d'une bougie 4H</b> (§4quindecies)</div>
+    <div class="cancel-title">🚫 Pas de trade si…</div>
+    <div class="cancel-item"><div class="cancel-dot"></div>Le <b>biais</b> n'est pas aligné (4H et petit timeframe en désaccord)</div>
+    <div class="cancel-item"><div class="cancel-dot"></div>Le prix n'est <b>pas dans un POI</b> : « au milieu de nulle part »</div>
+    <div class="cancel-item"><div class="cancel-dot"></div><b>Pas de sweep</b> de liquidité</div>
+    <div class="cancel-item"><div class="cancel-dot"></div>Le <b>R:R est sous 2</b>, ou je ne sais pas où mettre le SL et le TP</div>
+    <div class="cancel-item"><div class="cancel-dot"></div>Il manque <b>à la fois</b> le market shift <b>et</b> le timing (c'est un B ou un C)</div>
+    <div class="cancel-item"><div class="cancel-dot"></div>3 trades ou 2 pertes aujourd'hui, ou moins de 10 min depuis une perte</div>
   </div>
 
-  <!-- VERDICT -->
-  <div class="verdict" id="verdict">
-    <div class="verdict-icon">✅</div>
-    <div class="verdict-title">Checklist complète — Trade validé</div>
-    <div class="verdict-sub">Toutes les conditions sont remplies. Tu peux entrer.</div>
-  </div>
-
-  <!-- ACTIONS -->
   <div class="actions">
     <button class="btn-reset" onclick="resetAll()">🔄 Nouveau trade</button>
     <button class="btn-expand" onclick="expandAll()">📂 Tout ouvrir</button>
   </div>
 
+  <p class="regle" style="text-align:center; margin:18px 0 6px">A+ = tout coché · A = tout le reste coché, mais <b>une seule</b> case jaune (market shift <b>ou</b> timing) manque · sinon B / C = pas de trade · risque fixe 0,25 % pour A et A+</p>
+  <p class="regle" style="text-align:center">L'ancienne checklist Tori est gardée en archive.</p>
+
 </div>
 
 <script>
-  const TOTAL = document.querySelectorAll('.item').length;
-  let checked = 0;
+  const ITEMS = Array.from(document.querySelectorAll('.item'));
+  const TOTAL = ITEMS.length;
+  const SECTIONS = Array.from(document.querySelectorAll('.section')).map(s => s.id);
 
   function toggle(el) {
-    if (el.classList.contains('checked')) {
-      el.classList.remove('checked');
-      checked--;
-    } else {
-      el.classList.add('checked');
-      checked++;
-    }
-    updateProgress();
+    el.classList.toggle('checked');
     updateSectionBadge(el.closest('.section'));
+    update();
   }
 
-  updateProgress();
+  function texte(el) {
+    return el.querySelector('.item-text').textContent.replace(/\s+/g, ' ').trim();
+  }
 
-  function updateProgress() {
-    const pct = (checked / TOTAL) * 100;
-    document.getElementById('globalBar').style.width = pct + '%';
+  function update() {
+    const checked = ITEMS.filter(i => i.classList.contains('checked')).length;
+    document.getElementById('globalBar').style.width = (checked / TOTAL * 100) + '%';
     document.getElementById('globalText').textContent = checked + ' / ' + TOTAL;
 
-    const verdict = document.getElementById('verdict');
-    if (checked === TOTAL) {
-      verdict.classList.add('show');
+    const manqueOblig = ITEMS.filter(i => i.dataset.k === 'm' && !i.classList.contains('checked'));
+    const ms = ITEMS.find(i => i.dataset.k === 'ms').classList.contains('checked');
+    const tm = ITEMS.find(i => i.dataset.k === 'tm').classList.contains('checked');
+    const v = document.getElementById('verdict');
+    v.classList.remove('cat-aplus', 'cat-a', 'cat-non');
+    let icon, titre, sub, liste = [];
+    if (checked === 0) {
+      icon = '⏳'; titre = 'Pas encore de trade'; sub = 'Coche les cases dans l\'ordre.'; v.classList.add('cat-non');
+    } else if (manqueOblig.length === 0 && ms && tm) {
+      icon = '⭐'; titre = 'A+ — tu peux entrer'; sub = 'Les 5 règles d\'or sont cochées. Risque 0,25 %.'; v.classList.add('cat-aplus');
+    } else if (manqueOblig.length === 0 && (ms || tm)) {
+      icon = '✅'; titre = 'A — tu peux entrer'; sub = (ms ? 'Hors fenêtre' : 'Sans market shift (entrée agressive)') + ' : une seule case jaune manque. Risque 0,25 %.'; v.classList.add('cat-a');
     } else {
-      verdict.classList.remove('show');
+      icon = '❌'; titre = 'Pas de trade (pour l\'instant)'; v.classList.add('cat-non');
+      sub = manqueOblig.length ? 'Il manque des cases obligatoires :' : 'Il manque à la fois le market shift et le timing : c\'est un B ou un C.';
+      liste = manqueOblig.map(texte);
     }
+    document.getElementById('vIcon').textContent = icon;
+    document.getElementById('vTitle').textContent = titre;
+    document.getElementById('vSub').textContent = sub;
+    document.getElementById('vManque').innerHTML = liste.slice(0, 6).map(t => '• <b>' + t + '</b>').join('<br>') + (liste.length > 6 ? '<br>… et ' + (liste.length - 6) + ' autres' : '');
   }
 
   function updateSectionBadge(section) {
     if (!section) return;
-    const id = section.id;
     const items = section.querySelectorAll('.item');
     const done = section.querySelectorAll('.item.checked').length;
-    const total = items.length;
-    document.getElementById('badge-' + id).textContent = done + '/' + total;
-
-    if (done === total) {
-      section.classList.add('complete');
-    } else {
-      section.classList.remove('complete');
-    }
+    document.getElementById('badge-' + section.id).textContent = done + '/' + items.length;
+    section.classList.toggle('complete', done === items.length);
   }
 
   function toggleSection(id) {
-    const s = document.getElementById(id);
-    s.classList.toggle('open');
+    document.getElementById(id).classList.toggle('open');
   }
-
-  const SECTIONS = Array.from(document.querySelectorAll('.section')).map(s => s.id);
 
   function expandAll() {
     SECTIONS.forEach(id => document.getElementById(id).classList.add('open'));
   }
 
   function resetAll() {
-    document.querySelectorAll('.item.checked').forEach(el => el.classList.remove('checked'));
-    checked = 0;
-    updateProgress();
+    ITEMS.forEach(el => el.classList.remove('checked'));
     SECTIONS.forEach(id => {
       const s = document.getElementById(id);
-      s.classList.remove('complete');
-      const items = s.querySelectorAll('.item');
-      document.getElementById('badge-' + id).textContent = '0/' + items.length;
+      updateSectionBadge(s);
+      s.classList.toggle('open', id === 's0');
     });
-    document.getElementById('verdict').classList.remove('show');
-    // Ouvre la première section
-    document.getElementById('s1').classList.add('open');
-    SECTIONS.slice(1).forEach(id => document.getElementById(id).classList.remove('open'));
+    update();
   }
+
+  update();
 </script>
 </body>
 </html>
