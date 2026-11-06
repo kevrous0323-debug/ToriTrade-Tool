@@ -165,8 +165,8 @@
       <div class="field-group">
         <label>Risque par trade</label>
         <div class="toggle-group">
-          <button class="toggle-btn" id="risk1" onclick="setRisk(1)">1% (FTMO)</button>
-          <button class="toggle-btn active-risk" id="risk2" onclick="setRisk(2)">2% (Tori)</button>
+          <button class="toggle-btn active-risk" id="risk1" onclick="setRisk(0.1)">0,10 % (fixe, apprentissage)</button>
+          <button class="toggle-btn" id="risk2" onclick="setRisk(0.25)">0,25 % (plafond)</button>
         </div>
       </div>
     </div>
@@ -187,7 +187,7 @@
       <div style="background:#2d1416;border:1px solid #f85149;border-radius:8px;padding:12px;margin-bottom:12px;font-size:13px;color:#ffa198;line-height:1.6">
         <b style="color:#ff7b72">🔴 LA VÉRIFICATION QUI FAIT FOI, C'EST TRADINGVIEW LUI-MÊME</b><br>
         Une fois le <b>Stop Loss renseigné dans l'ordre</b>, TradingView affiche <b>« X % risque »</b> juste à côté du champ Volume.
-        <b style="color:#e6edf3">Ajuste le volume jusqu'à lire exactement « 1.00 % risque ».</b>
+        <b style="color:#e6edf3">Ajuste le volume jusqu'à lire exactement « 0.10 % risque » (ton risque fixe).</b>
         C'est la seule mesure exacte — elle vient de la plateforme, pas d'une conversion.<br>
         <span style="color:#8b949e">Le calcul ci-dessous ne sert qu'à te donner un volume de départ.</span>
       </div>
@@ -257,7 +257,7 @@
 
 <script>
   let direction = 'long';
-  let riskPct = 2;
+  let riskPct = 0.1;   // risque fixe de la phase d'apprentissage (06/11/2026) ; 0,25 % = plafond
 
   // Mémorisation capital + risque + taille de contrat (localStorage)
   function saveCapital() {
@@ -279,7 +279,7 @@
     const cap = localStorage.getItem('toritrade_calc_capital');
     if (cap) document.getElementById('capital').value = cap;
     const r = localStorage.getItem('toritrade_calc_risk');
-    if (r) setRisk(parseInt(r));
+    if (r) setRisk(parseFloat(r));
     const cs = localStorage.getItem('toritrade_calc_contractsize');
     if (cs) document.getElementById('contractSize').value = cs;
     } catch(e) {}
@@ -303,10 +303,11 @@
   }
 
   function setRisk(r) {
+    if (r !== 0.1 && r !== 0.25) r = 0.1;   // anciennes valeurs mémorisées (1 % / 2 %) ramenées au risque fixe
     riskPct = r;
     try { localStorage.setItem('toritrade_calc_risk', r); } catch(e) {}
-    document.getElementById('risk1').className = 'toggle-btn' + (r === 1 ? ' active-risk' : '');
-    document.getElementById('risk2').className = 'toggle-btn' + (r === 2 ? ' active-risk' : '');
+    document.getElementById('risk1').className = 'toggle-btn' + (r === 0.1 ? ' active-risk' : '');
+    document.getElementById('risk2').className = 'toggle-btn' + (r === 0.25 ? ' active-risk' : '');
     calc();
   }
 

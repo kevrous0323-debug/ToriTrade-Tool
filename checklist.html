@@ -567,7 +567,7 @@
       </div>
       <div class="item" data-k="m" onclick="toggle(this)">
         <div class="checkbox"><span class="checkbox-tick">✓</span></div>
-        <span class="item-text">Lot = <b>0,25 %</b> des capitaux propres, arrondi vers le bas (R11) · au plus 2 positions à risque (R13)</span>
+        <span class="item-text">Lot = <b>0,10 %</b> des capitaux propres (phase d'apprentissage, plafond 0,25 %), arrondi vers le bas (R11) · au plus 2 positions à risque (R13)</span>
         <span class="item-tag tag-ftmo">R11</span>
       </div>
     </div>
@@ -621,7 +621,7 @@
     <button class="btn-expand" onclick="expandAll()">📂 Tout ouvrir</button>
   </div>
 
-  <p class="regle" style="text-align:center; margin:18px 0 6px">A+ = tout coché · A = tout le reste coché, mais <b>une seule</b> case jaune (market shift <b>ou</b> timing) manque · sinon B / C = pas de trade · risque fixe 0,25 % pour A et A+</p>
+  <p class="regle" style="text-align:center; margin:18px 0 6px">A+ = tout coché · A = tout le reste coché, mais <b>une seule</b> case jaune (market shift <b>ou</b> timing) manque · sinon B / C = pas de trade · risque fixe 0,10 % pour A et A+ (phase d'apprentissage, depuis le 06/11)</p>
   <p class="regle" style="text-align:center">L'ancienne checklist Tori est gardée en archive.</p>
 
 </div>
@@ -655,9 +655,9 @@
     if (checked === 0) {
       icon = '⏳'; titre = 'Pas encore de trade'; sub = 'Coche les cases dans l\'ordre.'; v.classList.add('cat-non');
     } else if (manqueOblig.length === 0 && ms && tm) {
-      icon = '⭐'; titre = 'A+ — tu peux entrer'; sub = 'Les 5 règles d\'or sont cochées. Risque 0,25 %.'; v.classList.add('cat-aplus');
+      icon = '⭐'; titre = 'A+ — tu peux entrer'; sub = 'Les 5 règles d\'or sont cochées. Risque 0,10 %.'; v.classList.add('cat-aplus');
     } else if (manqueOblig.length === 0 && (ms || tm)) {
-      icon = '✅'; titre = 'A — tu peux entrer'; sub = (ms ? 'Hors fenêtre' : 'Sans market shift (entrée agressive)') + ' : une seule case jaune manque. Risque 0,25 %.'; v.classList.add('cat-a');
+      icon = '✅'; titre = 'A — tu peux entrer'; sub = (ms ? 'Hors fenêtre' : 'Sans market shift (entrée agressive)') + ' : une seule case jaune manque. Risque 0,10 %.'; v.classList.add('cat-a');
     } else {
       icon = '❌'; titre = 'Pas de trade (pour l\'instant)'; v.classList.add('cat-non');
       sub = manqueOblig.length ? 'Il manque des cases obligatoires :' : 'Il manque à la fois le market shift et le timing : c\'est un B ou un C.';
